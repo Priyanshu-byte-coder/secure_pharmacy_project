@@ -3,7 +3,15 @@
 #include <bits/stdc++.h>
 using namespace std;
 //2 types of the medicine otc and not otc
-class Medicine{};
+class Medicine{
+    string name;
+    float price;
+    int quantity;
+public:
+    void display(){
+        cout<<"Medicine name:"<<name<<"\n";
+    }
+};
 
 class otc_med:public Medicine{
 };
