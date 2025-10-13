@@ -10,23 +10,55 @@ struct userinfo{
 };
 class User{
     private:
-    // int userID;
     string username;
     string password;
     string role;
     //file where all the users are stored
     static const string filename;
     protected:
+    string userID;
+    string email;
+    string phone;
     string name;
+    bool isLoggedIn;
     public:
     //default constructor
-    User(){}
+    User():isLoggedIn(false){}
     //parameterized constructor
-    User(string uname,string pass,string r){//,int usid
+    User(string uname,string pass,string r,string n="",string e="",string p=""){
         username=uname;
         password=pass;
-        // userID=usid;
         role=r;
+        name=n;
+        email=e;
+        phone=p;
+        isLoggedIn=false;
+        userID=generateUserID();
+    }
+
+    //it is a virutal fuction which will work differently for different users.
+    virtual void displayMenu()=0;
+    virtual bool performOperation(int choice)=0;
+
+    virtual ~User(){}
+
+    // getter fuctions
+    string getUsername()const{return username;}
+    string getPassword()const{return password;}
+    string getRole()const{return role;}
+    string getName()const{return name;}
+    bool getLoginStatus()const{return isLoggedIn;}
+
+    //for the userid generation
+    //static variable to count the number of users of 3 types
+    static int patientCounter;
+    static int doctorCounter;
+    static int chemistCounter;
+    //static fuctions for ID generation 
+    static string generateUserID(const string& role){
+        if(role=="patient")return "P"+to_string(patientCounter++);
+        else if(role=="doctor")return "D"+to_string(doctorCounter++);
+        else return "C"+to_string(chemistCounter++);
     }
     //if the user is new then register them
     bool registerUser(){
@@ -40,9 +72,9 @@ class User{
             cout<<"ERROR: could not open the file for writing"<<endl;
             return false;
         }
-        fout<<username<<','<<password<<','<<role<<endl;
+        fout<<username<<','<<password<<','<<role<<','<<userID<<name<<email<<phone<<endl;
         fout.close();
-        cout<<"Registration successful "<<endl;
+        cout<<"Registration successful! your ID is: "<<userID<<endl;
         return true;
     }
 
@@ -52,12 +84,15 @@ class User{
         auto it=users.find(username);
         if(it==users.end()){
             cout<<"No such user found."<<endl;
+            return false;
         }
-        if(password==it->second.password){
+        if(password==it->second.password&&role==it->second.role){
             cout<<"login successfull !!"<<endl;
-            cout<<"Welcome, "<<username<<endl;
+            cout<<"Welcome, "<<username<<"(ID: "<<userID<<")"<<endl;
+            isLoggedIn=true;
+            return true;
         }else{
-            cout<<"INCORECT password."<<endl;
+            cout<<"INCORECT password OR role"<<endl;
             return false;
         }
     }
