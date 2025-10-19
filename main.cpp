@@ -72,7 +72,7 @@ class User{
             cout<<"ERROR: could not open the file for writing"<<endl;
             return false;
         }
-        fout<<username<<','<<password<<','<<role<<','<<userID<<name<<email<<phone<<endl;
+        fout<<username<<','<<password<<','<<role<<','<<userID<<','<<name<<','<<email<<','<<phone<<endl;
         fout.close();
         cout<<"Registration successful! your ID is: "<<userID<<endl;
         return true;
@@ -120,6 +120,31 @@ class User{
     
 };
 const string User::filename="users.csv";
+
+
+// stat counter for uid gen, patient-1000,doc-2000,chem-3000
+int User::patientCounter = 1000;
+int User::doctorCounter = 2000;
+int User::chemistCounter = 3000;
+
+class Patient : public User {
+    public:
+        Patient(string uname, string pass, string n="",string e="",string p="") : User(uname,pass,"patient",n,e,p){}
+
+        void displayMenu() override {
+        cout << "\n--- Patient Menu ---\n";
+        cout << "1: View Medical Records\n";
+        cout << "2: View Prescriptions\n";
+        cout << "3: Book Appointment\n"; 
+        cout << "0: Logout\n";
+    }
+    bool performOperation(int choice) override{
+        switch(choice){
+            case 1:
+                
+        }
+    }
+}
 
 int main() {
     while (true) {
