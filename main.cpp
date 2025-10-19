@@ -21,20 +21,34 @@ class User{
     string phone;
     string name;
     bool isLoggedIn;
+
+    string generateUID(){
+        if(role=="patient")return "P" + to_string(patientCounter++);
+        else if(role=="doctor")return "D" + to_string(doctorCounter);
+        else return "C" + to_string(chemistCounter);
+    }
     public:
+
+    static int patientCounter;
+    static int doctorCounter;
+    static int chemistCounter;
+
     //default constructor
     User():isLoggedIn(false){}
     //parameterized constructor
     User(string uname,string pass,string r,string n="",string e="",string p=""){
         username=uname;
-        password=pass;
+        password=pass;      
         role=r;
         name=n;
-        email=e;
+        email=e; 
         phone=p;
         isLoggedIn=false;
-        userID=generateUserID();
+        userID=generateUID();
     }
+    //loading existing users
+    User(string uname,string pass,string r,string id,string n,string e,string p, bool loggedIn = false)
+    : username(uname),password(pass),role(r),name(n),email(e),phone(p),isLoggedIn(loggedIn){}
 
     //it is a virutal fuction which will work differently for different users.
     virtual void displayMenu()=0;
