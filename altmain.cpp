@@ -197,35 +197,261 @@ class Patient : public User {
         fin.close();
     }
 
-    void bookAppointment() {
+
+    void bookAppointment() { //half chatgpt
         string doctorID, date, reason;
         
         cout << "\n--- Book New Appointment ---\n";
-        cout << "Enter Doctor ID (e.g., D2001): ";
+        cout << "Enter Doctor ID (e.g., D2000): ";
         getline(cin, doctorID);
         cout << "Enter Desired Date (YYYY-MM-DD): ";
         getline(cin, date);
         cout << "Enter Reason for Appointment: ";
         getline(cin, reason);
 
-        //open appmn file for appending
-        ofstream fout(appointmentFilename, ios::app); 
+        if (doctorID.length() < 5 || doctorID[0] != 'D') {
+             cout << "Invalid Doctor ID format. Must start with 'D' (e.g., D2000).\n";
+             return;
+        }
         
+        // patient history (chatgpt idea)
+        ofstream fout(appointmentFilename, ios::app); 
         if (!fout.is_open()) {
-            cout << "ERROR: Could not open the appointment file.\n";
+            cout << "ERROR: Could not open patient appointment file: " << appointmentFilename << endl;
             return;
         }
-
-        //write request
         fout << userID << "," << doctorID << "," << date << "," << reason << ",PENDING" << endl;
         fout.close();
         
-        cout << "\nAppointment request successfully submitted!\n";
-        cout << "Status: PENDING confirmation from Doctor " << doctorID << ".\n";
+        // doctor inbox mai jayega (chatgpt)
+        string doctorInboxFilename = doctorID + "_inbox.csv";
+        ofstream docFout(doctorInboxFilename, ios::app);
+        
+        if (docFout.is_open()) {
+            docFout << userID << "," << doctorID << "," << date << "," << reason << ",PENDING" << endl;
+            docFout.close();
+            cout << "\nAppointment request successfully submitted!\n";
+            cout << "Status: PENDING confirmation from Doctor " << doctorID << ".\n";
+        } else {
+             cout << "WARNING: Could not open Doctor's inbox file: " << doctorInboxFilename << endl;
+             cout << "Appointment submitted to your history, but may not show up in doctor's inbox.\n";
+        }
     }
 };
 
+class Doctor : public User {
+    private:
+        string inboxFilename;
+    public:
+        // Constructor for NEW registration
+        Doctor(string uname, string pass, string n="", string e="", string p="")
+            : User(uname, pass, "doctor", n, e, p){
+            inboxFilename = userID + "_inbox.csv";
+        }
+        
+        // Constructor for EXISTING user login
+        Doctor(const vector<string>& details) 
+            : User(details[0], details[1], details[2], details[3], details[4], details[5], details[6], true) {
+            inboxFilename = userID + "_inbox.csv";
+        }
+
+        void displayMenu() override {
+            cout << "\n--- Doctor Menu (ID: " << userID << ") ---\n";
+            cout << "1: View Appointment Requests\n";
+            cout << "2: Write Prescription\n";
+            cout << "0: Logout\n";
+            cout << "Choice: ";
+        }
+        
+        bool performOperation(int choice) override {
+            switch (choice) {
+                case 1:
+                    viewAppointmentRequests();
+                    return true;
+                case 2:
+                    writePrescription();
+                    return true;
+                case 0:
+                    cout << "Logging out...\n";
+                    return false;
+                default:
+                    cout << "Invalid choice for Doctor. Try again.\n";
+                    return true;
+            }
+        }
+        
+        void viewAppointmentRequests() {  //half chatgpt
+            cout << "\n--- Appointment Requests (Inbox: " << userID << ") ---\n";
+            ifstream fin(inboxFilename);
+            
+            if (!fin.is_open()) {
+                cout << "No pending appointment requests in your inbox. File: " << inboxFilename << endl;
+                return;
+            }
+            
+            string line;
+            int count = 0;
+            
+            // simple table
+            cout << "------------------------------------------------------------------------\n";
+            cout << "Patient ID | Date       | Reason (First 20 Chars) | Status\n";
+            cout << "------------------------------------------------------------------------\n";
+            
+            while (getline(fin, line)) {
+                stringstream ss(line);
+                string patientID, doctorID, date, reason, status;
+                
+                if (getline(ss, patientID, ',') && 
+                    getline(ss, doctorID, ',') && 
+                    getline(ss, date, ',') && 
+                    getline(ss, reason, ',') && 
+                    getline(ss, status)) 
+                {
+                    //truncate reason
+                    string displayReason = reason.length() > 20 ? reason.substr(0, 17) + "..." : reason;
+
+                    cout << patientID << " | " 
+                         << date << " | " 
+                         << displayReason << " | "
+                         << status << endl;
+                    count++;
+                }
+            }
+            cout << "------------------------------------------------------------------------\n";
+            fin.close();
+            
+            if (count == 0) {
+                cout << "You have no PENDING appointment requests.\n";
+            } else {
+                cout << count << " PENDING requests found. (Note: Confirmation/management logic not implemented).\n";
+            }
+        }
+
+        void writePrescription() {
+            string patientID;
+            cout << "\n--- Write New Prescription ---\n";
+            cout << "Enter Patient ID (e.g., P1000): ";
+            getline(cin, patientID);
+            
+            string prescriptionFilename = patientID + "_prescriptions.txt";
+            
+            if (patientID.length() < 5 || patientID[0] != 'P') {
+                cout << "Invalid Patient ID format. Must start with 'P' (e.g., P1000).\n";
+                return;
+            }
+
+            string medicine, dosage, notes;
+            cout << "Enter Medicine Name: ";
+            getline(cin, medicine);
+            cout << "Enter Dosage Instructions: ";
+            getline(cin, dosage);
+            cout << "Enter Notes/Duration: ";
+            getline(cin, notes);
+            
+            //date (chatgpt)
+            time_t now = time(0);
+            tm *ltm = localtime(&now);
+            char dateBuffer[11];
+            strftime(dateBuffer, 11, "%Y-%m-%d", ltm);
+            string currentDate(dateBuffer);
+
+            ofstream fout(prescriptionFilename, ios::app);
+            if (!fout.is_open()) {
+                cout << "ERROR: Could not open prescription file for Patient ID: " << patientID << endl;
+                return;
+            }
+
+            fout << "Date: " << currentDate << endl;
+            fout << "Doctor ID: " << userID << endl;
+            fout << "Medicine: " << medicine << endl;
+            fout << "Dosage: " << dosage << endl;
+            fout << "Notes: " << notes << endl;
+            fout << "--- End of Prescription ---\n";
+            fout.close();
+
+            cout << "\nPrescription successfully written to file: " << prescriptionFilename << endl;
+        }
+};
+
+class Chemist : public User {
+    public:
+        Chemist(string uname, string pass, string n="", string e="", string p="")
+            : User(uname, pass, "chemist", n, e, p){}
+        
+        Chemist(const vector<string>& details) 
+            : User(details[0], details[1], details[2], details[3], details[4], details[5], details[6], true) {}
+
+        void displayMenu() override {
+            cout << "\n--- Chemist Menu (ID: " << userID << ") ---\n";
+            cout << "1: Process Prescription (Simulated)\n";
+            cout << "0: Logout\n";
+            cout << "Choice: ";
+        }
+        
+        bool performOperation(int choice) override {
+            switch (choice) {
+                case 1:
+                    processPrescription();
+                    return true;
+                case 0:
+                    cout << "Logging out...\n";
+                    return false;
+                default:
+                    cout << "Invalid choice for Chemist. Try again.\n";
+                    return true;
+            }
+        }
+
+        void processPrescription() {
+            string patientID;
+            cout << "\n--- Process Prescription ---\n";
+            cout << "Enter Patient ID to check for prescription (e.g., P1000): ";
+            getline(cin, patientID);
+
+            
+            string prescriptionFilename = patientID + "_prescriptions.txt";
+            ifstream fin(prescriptionFilename);
+            
+            if (fin.is_open()) {
+                cout << "Prescription found for Patient " << patientID << ". Dispensing medication...\n";
+                cout << "Process completed. (File content not displayed for simplicity).\n";
+                fin.close();
+            } else {
+                cout << "No prescription found for Patient " << patientID << " in file: " << prescriptionFilename << endl;
+            }
+        }
+};
+
+//helper func, keep user in loop(chatgpt)
+void runUserSession(User* user) {
+    bool keepRunning = true;
+    while (keepRunning) {
+        user->displayMenu();
+        string choiceStr;
+        getline(cin, choiceStr);
+        try {
+            int choice = stoi(choiceStr);
+            keepRunning = user->performOperation(choice);
+        } catch (const invalid_argument& e) {
+            cout << "Invalid input. Please enter a number.\n";
+        }
+    }
+}
+
 int main() {
+
+
+    ofstream usersFile("users.csv", ios::app);
+    if (usersFile.is_open() && usersFile.tellp() == 0) {
+        usersFile << "docuser,docpass,doctor,D2000,Dr. Smith,doc@hospital.com,5551234\n"; 
+        usersFile << "patuser,patpass,patient,P1000,Jane Doe,jane@home.com,5555678\n";
+        // update counters, from last uid
+        User::doctorCounter = 2001; 
+        User::patientCounter = 1001;
+        usersFile.close();
+    }
+
+
     while (true) {
         cout << "\n--- Menu ---\n";
         cout << "1: Register\n";
@@ -245,10 +471,20 @@ int main() {
             cout << "Enter role: ";
             getline(cin, role);
 
-            User newUser(uname,pass,role);
-            newUser.registerUser();
+            User* newUser = nullptr;
+            if(role=="patient"){
+                newUser = new Patient(uname,pass);
+            }
+            else if(role=="doctor"){
+                newUser = new Doctor(uname, pass);
+            }
+            else{
+                newUser = new Chemist(uname,pass,role);
+            }
 
-        } else if (choice == "2") {
+          
+
+            } else if (choice == "2") {
             string uname, pass,role;
             cout << "Enter username: ";
             getline(cin, uname);
@@ -257,9 +493,38 @@ int main() {
             cout << "Enter role: ";
             getline(cin, role);
 
-            User loginAttempt(uname, pass,role);
-            loginAttempt.loginUser();
+            unordered_map<string, userinfo> users = User::loadUsers();
+            auto it = users.find(uname);
 
+            // authenticate
+            if (it == users.end() || it->second.role != role || it->second.password != pass) {
+                cout << "Login failed. Check username, password, and role.\n";
+                continue;
+            }
+
+            vector<string> details = User::loadFullUserDetails(uname);
+            User* currentUser = nullptr;
+
+            if (details.empty()) {
+                cout << "Error: User details corrupted or not found in data file.\n";
+                continue;
+            }
+
+            // polymorphism based on role
+            if (role == "patient") {
+                currentUser = new Patient(details);
+            } else if (role == "doctor") {
+                currentUser = new Doctor(details);
+            } else (role == "chemist") {
+                currentUser = new Chemist(details);
+            }
+            
+            cout << "Login successful! Welcome, " << currentUser->getUsername() << ".\n";
+            
+            runUserSession(currentUser);
+
+            delete currentUser; 
+            
         } else if (choice == "0") {
             cout << "Goodbye!\n";
             break;
