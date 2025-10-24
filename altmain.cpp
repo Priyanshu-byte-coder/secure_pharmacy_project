@@ -1,13 +1,12 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-
-
 //for storing the userinfo 
 struct userinfo{
     string password;
     string role;
 };
+
 class User{
     private:
     string username;
@@ -53,7 +52,6 @@ class User{
     //it is a virutal fuction which will work differently for different users.
     virtual void displayMenu()=0;
     virtual bool performOperation(int choice)=0;
-
     virtual ~User(){}
 
     // getter fuctions
@@ -61,7 +59,6 @@ class User{
     string getRole()const{return role;}
     string getUserID() const {return userID;}
 
-    
     //Register new user
     bool registerUser(){
         unordered_map<string,userinfo>users=loadUsers();
@@ -100,7 +97,6 @@ class User{
         return mpp;
     }
 
-
     //load full deets after successufull login
     static vector<string> loadFullUserDetails(const string& uname) {
         ifstream fin(filename);
@@ -126,7 +122,6 @@ class User{
     
     
 };
-
 
 const string User::filename="users.csv";
 // stat counter for uid gen, patient-1000,doc-2000,chem-3000
@@ -223,7 +218,7 @@ class Patient : public User {
         fout << userID << "," << doctorID << "," << date << "," << reason << ",PENDING" << endl;
         fout.close();
         
-        // doctor inbox mai jayega (chatgpt)
+        // doctor ke inbox mai jayega (chatgpt)
         string doctorInboxFilename = doctorID + "_inbox.csv";
         ofstream docFout(doctorInboxFilename, ios::app);
         
