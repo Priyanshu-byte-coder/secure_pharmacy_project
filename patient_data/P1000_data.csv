@@ -1,0 +1,20 @@
+=== PATIENT PERSONAL INFORMATION ===
+Name,priyanshu doshi
+UserID,P1000
+Email,doshipriyanshu3@gmail.com
+Phone,9549926195
+Address,spectrum tower shahibaugh ahmedabad
+EmergencyContact,9974494975
+
+=== MEDICAL HISTORY ===
+
+=== PRESCRIPTIONS ===
+
+--- Prescription ID: RX1000 ---
+Date: 2025-10-25 11:04:41
+Doctor ID: D2000
+Medicines Prescribed:
+  - amoxicillin (Non-OTC), Qty: 21, Dosage: 500mg three times dialy for 7 days
+  - paracetamol (OTC), Qty: 10, Dosage: 500mg three times daily for 7 days
+Status: PENDING DISPENSING
+--- End of Prescription ---

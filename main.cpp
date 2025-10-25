@@ -110,17 +110,49 @@ class User{
             string uname,pass,role;
             if(getline(ss,uname,',')&&getline(ss,pass,',')&&getline(ss,role)){
                 mpp[uname]={pass,role};
+                //update counters based on existing ids
+                updateCountersFromFile(role);
             }
         }
         fin.close();
         return mpp;
 
     }
-    
-    
+    //helper function to update the counters based on existing ids
+    static void updateCountersFromFile(const string& role) {
+        if (role == "patient") {
+            patientCounter++;  // Increment for each patient found in file
+        } else if (role == "doctor") {
+            doctorCounter++;   // Increment for each doctor found in file
+        } else if (role == "chemist") {
+            chemistCounter++;  // Increment for each chemist found in file
+        }
+    }
+    //logout function 
+    void logout(){
+        isLoggedIn=false;
+        cout<<"logged out successfully "<<endl;
+    }
 };
-const string User::filename="users.csv";
 
+//initializing all the static members        
+const string User::filename="users.csv";
+int User::patientCounter=0;
+int User::doctorCounter=0;
+int User::chemistCounter=0;
+
+
+//patient class inherited from the user
+class Patient:public User{
+    private:
+    string address;
+    string emergencyContact;
+    vector<string>medicalHistory;//list of all the medical condition
+    vector<string>prescriptionIDs;
+    public:
+    Patient:User(){}
+    Patient(string uname,string pass,string n,string addr,string emergency):User(uname,pass,"patient",n)
+}
 int main() {
     while (true) {
         cout << "\n--- Menu ---\n";

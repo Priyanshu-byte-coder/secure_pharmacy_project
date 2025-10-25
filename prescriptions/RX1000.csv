@@ -1,0 +1,10 @@
+PrescriptionID,RX1000
+PatientID,P1000
+DoctorID,D2000
+Date,2025-10-25 11:04:41
+Status,DISPENSED
+
+Medicines:
+MedicineID,Name,Type,Quantity,Dosage
+MED8327,amoxicillin,Non-OTC,21,500mg three times dialy for 7 days
+MED2545,paracetamol,OTC,10,500mg three times daily for 7 days
