@@ -303,6 +303,30 @@ private:
     string generatePrescriptionID() {
         return "RX" + to_string(prescriptionCounter++);
     }
+    
+    static void initializePrescriptionCounter() {
+        // Scan prescriptions folder for highest RX number
+        ifstream checkDir("prescriptions/");
+        if (!checkDir.good()) {
+            prescriptionCounter = 1000;  // Start fresh if no folder
+            return;
+        }
+        checkDir.close();
+        
+        int maxID = 999;  // Start below 1000
+        
+        // Try to open files RX1000 to RX9999
+        for (int i = 1000; i < 10000; i++) {
+            string filename = "prescriptions/RX" + to_string(i) + ".csv";
+            ifstream testFile(filename);
+            if (testFile.good()) {
+                maxID = i;  // Found this file
+                testFile.close();
+            }
+        }
+        
+        prescriptionCounter = maxID + 1;  // Next available ID
+    }
 
 public:
     Doctor(string uname, string pass, string n, string e, string p, string spec, string license)
@@ -698,6 +722,9 @@ void runUserSession(User* user) {
 
 int main() {
     srand(time(0));  // Seed for random medicine IDs
+    
+    // Initialize prescription counter from existing files
+    Doctor::initializePrescriptionCounter();
     
     cout << "\n============================================" << endl;
     cout << "   SECURE PHARMACY PRESCRIPTION SYSTEM" << endl;
