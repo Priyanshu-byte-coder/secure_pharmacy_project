@@ -1,0 +1,33 @@
+=== PATIENT PERSONAL INFORMATION ===
+Name,John Doe
+UserID,P1001
+Email,john.doe@email.com
+Phone,9876543210
+Address,123 Main Street, Mumbai
+EmergencyContact,9876543211
+
+=== MEDICAL HISTORY ===
+2025-10-28 17:44:26: Blood sugar levels stable, continue current medication (Dr. D2001)
+2025-10-20 09:30:00: Diagnosed with Type 2 Diabetes (Dr. D2000)
+2025-10-22 14:15:00: Blood pressure monitoring recommended (Dr. D2001)
+2025-10-25 10:00:00: Follow-up consultation for diabetes management (Dr. D2000)
+
+=== PRESCRIPTIONS ===
+
+--- Prescription ID: RX1001 ---
+Date: 2025-10-20 09:45:00
+Doctor ID: D2000
+Medicines Prescribed:
+  - Metformin (Non-OTC), Qty: 60, Dosage: 500mg twice daily after meals
+  - Glimepiride (Non-OTC), Qty: 30, Dosage: 1mg once daily before breakfast
+Status: DISPENSED
+--- End of Prescription ---
+
+--- Prescription ID: RX1003 ---
+Date: 2025-10-25 10:30:00
+Doctor ID: D2000
+Medicines Prescribed:
+  - Metformin (Non-OTC), Qty: 60, Dosage: 500mg twice daily after meals
+  - Aspirin (OTC), Qty: 30, Dosage: 75mg once daily
+Status: PENDING DISPENSING
+--- End of Prescription ---

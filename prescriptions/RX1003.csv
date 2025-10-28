@@ -1,0 +1,10 @@
+PrescriptionID,RX1003
+PatientID,P1001
+DoctorID,D2000
+Date,2025-10-25 10:30:00
+Status,PENDING
+
+Medicines:
+MedicineID,Name,Type,Quantity,Dosage
+MED3001,Metformin,Non-OTC,60,500mg twice daily after meals
+MED3002,Aspirin,OTC,30,75mg once daily

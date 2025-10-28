@@ -1,10 +1,10 @@
 PrescriptionID,RX1000
-PatientID,P1000
-DoctorID,D2000
-Date,2025-10-25 11:04:41
-Status,DISPENSED
+PatientID,P1002
+DoctorID,D2001
+Date,2025-10-28 17:43:30
+Status,PENDING
 
 Medicines:
 MedicineID,Name,Type,Quantity,Dosage
-MED8327,amoxicillin,Non-OTC,21,500mg three times dialy for 7 days
-MED2545,paracetamol,OTC,10,500mg three times daily for 7 days
+MED2505,Azithromycin,Non-OTC,6,500mg once daily for 3 days
+MED7217,Cough Syrup,OTC,1,10ml three times daily

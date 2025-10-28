@@ -1,0 +1,11 @@
+PrescriptionID,RX1002
+PatientID,P1002
+DoctorID,D2001
+Date,2025-10-18 11:20:00
+Status,DISPENSED
+
+Medicines:
+MedicineID,Name,Type,Quantity,Dosage
+MED2001,Amoxicillin,Non-OTC,21,500mg three times daily for 7 days
+MED2002,Paracetamol,OTC,10,500mg as needed for fever
+MED2003,Vitamin C,OTC,30,1 tablet daily

@@ -1,0 +1,10 @@
+PrescriptionID,RX1004
+PatientID,P1002
+DoctorID,D2002
+Date,2025-10-26 09:00:00
+Status,PENDING
+
+Medicines:
+MedicineID,Name,Type,Quantity,Dosage
+MED4001,Cetirizine,OTC,10,10mg once daily for allergies
+MED4002,Multivitamin,OTC,30,1 tablet daily

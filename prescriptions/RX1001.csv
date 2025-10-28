@@ -1,0 +1,10 @@
+PrescriptionID,RX1001
+PatientID,P1001
+DoctorID,D2000
+Date,2025-10-20 09:45:00
+Status,DISPENSED
+
+Medicines:
+MedicineID,Name,Type,Quantity,Dosage
+MED1001,Metformin,Non-OTC,60,500mg twice daily after meals
+MED1002,Glimepiride,Non-OTC,30,1mg once daily before breakfast

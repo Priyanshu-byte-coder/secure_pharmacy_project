@@ -319,7 +319,6 @@ public:
         cout << "1. View Patient Data (Full Access)" << endl;
         cout << "2. Write Prescription" << endl;
         cout << "3. Update Patient Medical History" << endl;
-        cout << "4. View All My Prescriptions" << endl;
         cout << "0. Logout" << endl;
         cout << "========================================" << endl;
         cout << "Choice: ";
@@ -330,7 +329,6 @@ public:
             case 1: viewPatientData(); return true;
             case 2: writePrescription(); return true;
             case 3: updateMedicalHistory(); return true;
-            case 4: viewMyPrescriptions(); return true;
             case 0: cout << "Logging out..." << endl; return false;
             default: cout << "Invalid choice." << endl; return true;
         }
@@ -490,28 +488,8 @@ public:
         cout << "\n========================================"<< endl;
         cout << "      MY PRESCRIPTIONS" << endl;
         cout << "========================================" << endl;
-        int count = 0;
-        for (int i = 0; i < prescriptionCounter; i++) {
-            string prescFile = "prescriptions/RX" + to_string(i) + ".csv";
-            ifstream fin(prescFile);
-            if (fin) {
-                string line, prescID, patID, date;
-                bool isMyPrescription = false;
-                while (getline(fin, line)) {
-                    if (line.find("DoctorID," + getUserID()) != string::npos) isMyPrescription = true;
-                    if (line.find("PrescriptionID,") != string::npos) prescID = line.substr(line.find(",") + 1);
-                    if (line.find("PatientID,") != string::npos) patID = line.substr(line.find(",") + 1);
-                    if (line.find("Date,") != string::npos) date = line.substr(line.find(",") + 1);
-                }
-                if (isMyPrescription) {
-                    cout << "Prescription: " << prescID << " | Patient: " << patID << " | Date: " << date << endl;
-                    count++;
-                }
-                fin.close();
-            }
-        }
-        if (count == 0) cout << "No prescriptions found." << endl;
-        else cout << "\nTotal: " << count << endl;
+        cout << "Feature: View all prescriptions written by this doctor" << endl;
+        cout << "Check prescriptions/ folder for details" << endl;
         cout << "========================================" << endl;
     }
 };
@@ -597,28 +575,21 @@ public:
             return;
         }
         
-        // Read prescription and extract medicines
-        vector<string> lines;
         vector<Medicine> medicines;
         string line, patientID;
         bool inMedicineSection = false;
         
         while (getline(fin, line)) {
-            lines.push_back(line);
-            
             if (line.find("PatientID,") != string::npos) {
                 patientID = line.substr(line.find(",") + 1);
             }
-            
             if (line.find("Medicines:") != string::npos) {
                 inMedicineSection = true;
                 continue;
             }
-            
             if (inMedicineSection && line.find("MedicineID,Name,Type") == string::npos && !line.empty()) {
                 stringstream ss(line);
                 string medID, name, type, qtyStr, dosage;
-                
                 if (getline(ss, medID, ',') && getline(ss, name, ',') && 
                     getline(ss, type, ',') && getline(ss, qtyStr, ',') && getline(ss, dosage, ',')) {
                     Medicine med;
@@ -634,113 +605,49 @@ public:
         fin.close();
         
         if (medicines.empty()) {
-            cout << "No medicines found in prescription!" << endl;
+            cout << "No medicines found!" << endl;
             return;
         }
         
-        // Display medicines and let chemist select which to dispense
         cout << "\n========================================" << endl;
-        cout << "   MEDICINES IN PRESCRIPTION" << endl;
+        cout << "   MEDICINES TO DISPENSE" << endl;
         cout << "========================================" << endl;
-        
         for (size_t i = 0; i < medicines.size(); i++) {
             cout << (i + 1) << ". " << medicines[i].getName() 
-                 << " (" << (medicines[i].getIsOTC() ? "OTC" : "Non-OTC") << ")" << endl;
-            cout << "   Quantity: " << medicines[i].getQuantity() 
-                 << ", Dosage: " << medicines[i].getDosage() << endl;
-        }
-        cout << "========================================" << endl;
-        
-        // Select medicines to dispense
-        cout << "\nEnter medicine numbers to dispense (comma-separated, e.g., 1,3 or 'all'): ";
-        string selection;
-        getline(cin, selection);
-        
-        vector<int> selectedIndices;
-        
-        if (selection == "all" || selection == "ALL") {
-            for (size_t i = 0; i < medicines.size(); i++) {
-                selectedIndices.push_back(i);
-            }
-        } else {
-            stringstream ss(selection);
-            string num;
-            while (getline(ss, num, ',')) {
-                try {
-                    int idx = stoi(num) - 1;
-                    if (idx >= 0 && idx < (int)medicines.size()) {
-                        selectedIndices.push_back(idx);
-                    }
-                } catch (...) {
-                    cout << "Invalid input: " << num << endl;
-                }
-            }
+                 << " (" << (medicines[i].getIsOTC() ? "OTC" : "Non-OTC") << ")" 
+                 << " - Qty: " << medicines[i].getQuantity() << endl;
         }
         
-        if (selectedIndices.empty()) {
-            cout << "No valid medicines selected!" << endl;
-            return;
-        }
-        
-        // Update patient status file
+        // Update status file
         if (!patientID.empty()) {
             string statusFile = "prescriptions/" + patientID + "_status.csv";
             ifstream statusIn(statusFile);
             vector<string> statusLines;
-            
             if (statusIn) {
                 while (getline(statusIn, line)) {
-                    bool updated = false;
-                    
-                    // Check if this line matches any selected medicine
-                    for (int idx : selectedIndices) {
-                        if (line.find(prescriptionID) != string::npos && 
-                            line.find(medicines[idx].getName()) != string::npos &&
-                            line.find("PENDING") != string::npos) {
-                            size_t pos = line.find("PENDING");
-                            if (pos != string::npos) {
-                                line.replace(pos, 7, "DISPENSED");
-                                updated = true;
-                                break;
-                            }
-                        }
+                    if (line.find(prescriptionID) != string::npos && line.find("PENDING") != string::npos) {
+                        size_t pos = line.find("PENDING");
+                        if (pos != string::npos) line.replace(pos, 7, "DISPENSED");
                     }
                     statusLines.push_back(line);
                 }
                 statusIn.close();
-                
                 ofstream statusOut(statusFile);
-                for (const auto& sl : statusLines) {
-                    statusOut << sl << endl;
-                }
+                for (const auto& sl : statusLines) statusOut << sl << endl;
                 statusOut.close();
             }
         }
         
-        // Update dispensing history with individual medicines
+        // Log dispensing
         string historyFile = "chemist_data/" + getUserID() + "_dispensing_history.csv";
         createDirectory("chemist_data");
         ofstream histFout(historyFile, ios::app);
-        
         if (histFout) {
-            for (int idx : selectedIndices) {
-                histFout << prescriptionID << "," 
-                        << medicines[idx].getName() << "," 
-                        << medicines[idx].getQuantity() << ","
-                        << getCurrentDateTime() << "," 
-                        << getUserID() << endl;
-            }
+            histFout << prescriptionID << "," << getCurrentDateTime() << "," << getUserID() << endl;
             histFout.close();
         }
         
-        // Display confirmation
-        cout << "\n*** Medicine(s) dispensed successfully! ***" << endl;
-        cout << "Dispensed from Prescription ID: " << prescriptionID << endl;
-        cout << "Medicines dispensed:" << endl;
-        for (int idx : selectedIndices) {
-            cout << "  - " << medicines[idx].getName() 
-                 << " (Qty: " << medicines[idx].getQuantity() << ")" << endl;
-        }
+        cout << "\n*** All medicines dispensed successfully! ***" << endl;
     }
     
     void viewDispensingHistory() {
@@ -753,17 +660,14 @@ public:
             cout << "No dispensing history found." << endl;
             return;
         }
-        cout << left << setw(15) << "Prescription" << setw(25) << "Medicine" 
-             << setw(10) << "Quantity" << setw(22) << "Date & Time" << setw(12) << "Chemist" << endl;
-        cout << string(84, '-') << endl;
+        cout << left << setw(20) << "Prescription ID" << setw(25) << "Date & Time" << setw(15) << "Chemist ID" << endl;
+        cout << string(60, '-') << endl;
         string line;
         while (getline(fin, line)) {
             stringstream ss(line);
-            string prescID, medName, qty, dateTime, chemistID;
-            if (getline(ss, prescID, ',') && getline(ss, medName, ',') && 
-                getline(ss, qty, ',') && getline(ss, dateTime, ',') && getline(ss, chemistID, ',')) {
-                cout << left << setw(15) << prescID << setw(25) << medName 
-                     << setw(10) << qty << setw(22) << dateTime << setw(12) << chemistID << endl;
+            string prescID, dateTime, chemistID;
+            if (getline(ss, prescID, ',') && getline(ss, dateTime, ',') && getline(ss, chemistID, ',')) {
+                cout << left << setw(20) << prescID << setw(25) << dateTime << setw(15) << chemistID << endl;
             }
         }
         fin.close();

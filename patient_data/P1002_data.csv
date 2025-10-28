@@ -1,0 +1,41 @@
+=== PATIENT PERSONAL INFORMATION ===
+Name,Sarah Smith
+UserID,P1002
+Email,sarah.smith@email.com
+Phone,8765432109
+Address,456 Park Avenue, Delhi
+EmergencyContact,8765432108
+
+=== MEDICAL HISTORY ===
+2025-10-18 11:00:00: Respiratory infection diagnosed (Dr. D2001)
+2025-10-23 15:30:00: Recovery check-up, improving well (Dr. D2001)
+
+=== PRESCRIPTIONS ===
+
+--- Prescription ID: RX1002 ---
+Date: 2025-10-18 11:20:00
+Doctor ID: D2001
+Medicines Prescribed:
+  - Amoxicillin (Non-OTC), Qty: 21, Dosage: 500mg three times daily for 7 days
+  - Paracetamol (OTC), Qty: 10, Dosage: 500mg as needed for fever
+  - Vitamin C (OTC), Qty: 30, Dosage: 1 tablet daily
+Status: DISPENSED
+--- End of Prescription ---
+
+--- Prescription ID: RX1004 ---
+Date: 2025-10-26 09:00:00
+Doctor ID: D2002
+Medicines Prescribed:
+  - Cetirizine (OTC), Qty: 10, Dosage: 10mg once daily for allergies
+  - Multivitamin (OTC), Qty: 30, Dosage: 1 tablet daily
+Status: PENDING DISPENSING
+--- End of Prescription ---
+
+--- Prescription ID: RX1000 ---
+Date: 2025-10-28 17:43:30
+Doctor ID: D2001
+Medicines Prescribed:
+  - Azithromycin (Non-OTC), Qty: 6, Dosage: 500mg once daily for 3 days
+  - Cough Syrup (OTC), Qty: 1, Dosage: 10ml three times daily
+Status: PENDING DISPENSING
+--- End of Prescription ---
