@@ -914,9 +914,3 @@ MedicineID,Name,Type,Quantity,Dosage
 **END OF REPORT**
 
 ---
-
-**Declaration:**
-I hereby declare that this project is my original work and has been completed as part of the Object-Oriented Programming course. All concepts have been implemented to the best of my understanding and ability.
-
-**Signature:** _________________  
-**Date:** October 27, 2025
